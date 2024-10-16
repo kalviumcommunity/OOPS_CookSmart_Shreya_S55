@@ -1,75 +1,55 @@
 #include <iostream>
 #include <string>
-
 using namespace std;
 
 class Ingredient {
 private:
     string name;
-    double quantity;
-
-    // Static variables to track total ingredients and total quantity
-    static int totalIngredients;
-    static double totalQuantity;
+    int quantity;
+    static int totalIngredients; // Static variable to track total ingredients
 
 public:
-    // Constructor
-    Ingredient(string name, double quantity) {
-        this->name = name;
-        this->quantity = quantity;
-
-        // Update static variables
-        totalIngredients++;
-        totalQuantity += quantity;
+    Ingredient(string n, int q) : name(n), quantity(q) {
+        totalIngredients++; // Increment total ingredients whenever a new ingredient is added
     }
 
-    // Getter for name
     string getName() const {
-        return this->name;
+        return name;
     }
 
-    // Function to display ingredient details
-    void displayIngredient() const {
-        cout << "Ingredient: " << this->name << ", Quantity: " << this->quantity << " units" << endl;
+    int getQuantity() const {
+        return quantity;
     }
 
-    // Static function to display total ingredients and quantity
-    static void displayTotals() {
-        cout << "Total Ingredients: " << totalIngredients << endl;
-        cout << "Total Quantity: " << totalQuantity << " units" << endl;
+    static int getTotalIngredients() {
+        return totalIngredients; // Static member function to access static variable
     }
 
-    // Destructor
     ~Ingredient() {
-        // Update static variables when an ingredient is destroyed
-        totalIngredients--;
-        totalQuantity -= quantity;
-        cout << "Ingredient " << this->name << " is being deleted." << endl;
+        totalIngredients--; // Decrement total ingredients when an ingredient is destroyed
     }
 };
 
-// Initialize static variables
+// Initialize static variable
 int Ingredient::totalIngredients = 0;
-double Ingredient::totalQuantity = 0;
 
 int main() {
-    // Dynamically allocate memory for Ingredient objects
+    // Dynamically allocate ingredients using new and delete
     Ingredient* ingredient1 = new Ingredient("Sugar", 200);
-    Ingredient* ingredient2 = new Ingredient("Flour", 500);
-    
-    // Display ingredient details
-    ingredient1->displayIngredient();
-    ingredient2->displayIngredient();
+    Ingredient* ingredient2 = new Ingredient("Salt", 100);
 
-    // Display totals
-    Ingredient::displayTotals();
+    cout << "Ingredient 1: " << ingredient1->getName() << ", Quantity: " << ingredient1->getQuantity() << endl;
+    cout << "Ingredient 2: " << ingredient2->getName() << ", Quantity: " << ingredient2->getQuantity() << endl;
 
-    // Clean up memory
-    delete ingredient1; // Deallocate memory for ingredient1
-    delete ingredient2; // Deallocate memory for ingredient2
+    // Display total number of ingredients using static member function
+    cout << "Total Ingredients: " << Ingredient::getTotalIngredients() << endl;
 
-    // Display totals after deletion
-    Ingredient::displayTotals();
+    // Clean up dynamically allocated memory
+    delete ingredient1;
+    delete ingredient2;
+
+    // Check the total ingredients after deletion
+    cout << "Total Ingredients after deletion: " << Ingredient::getTotalIngredients() << endl;
 
     return 0;
 }
