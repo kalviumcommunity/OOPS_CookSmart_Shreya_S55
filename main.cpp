@@ -1,96 +1,85 @@
 #include <iostream>
-#include <string>
 #include <vector>
 using namespace std;
 
-class Ingredient {
-private:
-    string name;
-    int quantity;
+// Base Class (Parent) 
+class Appliance {
+protected:
+    string brand;
+    int power; // in watts
 
 public:
-    // Default Constructor
-    Ingredient() : name("Unknown"), quantity(0) {
-        cout << "Default constructor called for Ingredient." << endl;
+    // Parameterized Constructor
+    Appliance(string b, int p) : brand(b), power(p) {
+        cout << "Appliance constructor called for " << brand << endl;
     }
 
-    // Parameterized Constructor
-    Ingredient(string n, int q) : name(n), quantity(q) {
-        cout << "Parameterized constructor called for Ingredient: " << name << endl;
+    void displayApplianceInfo() const {
+        cout << "Brand: " << brand << ", Power: " << power << "W" << endl;
     }
 
     // Destructor
-    ~Ingredient() {
-        cout << "Destructor called for Ingredient: " << name << endl;
-    }
-
-    string getName() const {
-        return name;
-    }
-
-    int getQuantity() const {
-        return quantity;
-    }
-
-    void setQuantity(int q) {
-        quantity = q;
+    ~Appliance() {
+        cout << "Appliance destructor called for " << brand << endl;
     }
 };
 
-class Recipe {
-private:
-    string recipeName;
-    vector<Ingredient> ingredients;
+// Derived Class (Single Inheritance)
+class SmartDevice : public Appliance {
+protected:
+    bool wifiEnabled;
 
 public:
-    // Default Constructor
-    Recipe() : recipeName("Unnamed Recipe") {
-        cout << "Default constructor called for Recipe." << endl;
+    // Parameterized Constructor
+    SmartDevice(string b, int p, bool wifi) : Appliance(b, p), wifiEnabled(wifi) {
+        cout << "SmartDevice constructor called for " << brand << endl;
     }
 
-    // Parameterized Constructor
-    Recipe(string name) : recipeName(name) {
-        cout << "Parameterized constructor called for Recipe: " << recipeName << endl;
+    void displaySmartDeviceInfo() const {
+        displayApplianceInfo();
+        cout << "Wi-Fi Enabled: " << (wifiEnabled ? "Yes" : "No") << endl;
     }
 
     // Destructor
-    ~Recipe() {
-        cout << "Destructor called for Recipe: " << recipeName << endl;
-    }
-
-    void addIngredient(const Ingredient& ingredient) {
-        ingredients.push_back(ingredient);
-    }
-
-    void displayRecipe() const {
-        cout << "Recipe: " << recipeName << endl;
-        for (const auto& ingredient : ingredients) {
-            cout << "- " << ingredient.getName() << ": " << ingredient.getQuantity() << "g" << endl;
-        }
+    ~SmartDevice() {
+        cout << "SmartDevice destructor called for " << brand << endl;
     }
 };
 
+// Derived Class (Multi-Level Inheritance)
+class SmartOven : public SmartDevice {
+private:
+    int temperatureRange; // in Celsius
+
+public:
+    // Parameterized Constructor
+    SmartOven(string b, int p, bool wifi, int tempRange) 
+        : SmartDevice(b, p, wifi), temperatureRange(tempRange) {
+        cout << "SmartOven constructor called for " << brand << endl;
+    }
+
+    void displayOvenInfo() const {
+        displaySmartDeviceInfo();
+        cout << "Temperature Range: " << temperatureRange << "°C" << endl;
+    }
+
+    // Destructor
+    ~SmartOven() {
+        cout << "SmartOven destructor called for " << brand << endl;
+    }
+};
+
+// Main Function to demonstrate Inheritance
 int main() {
-    // Using default constructor for Ingredient
-    Ingredient defaultIngredient;
-    defaultIngredient.setQuantity(50);
+    // Single Inheritance Example
+    cout << "\n--- Single Inheritance ---\n";
+    SmartDevice mixer("Philips", 500, true);
+    mixer.displaySmartDeviceInfo();
 
-    // Using parameterized constructor for Ingredient
-    Ingredient sugar("Sugar", 200);
-    Ingredient salt("Salt", 100);
-
-    // Using default constructor for Recipe
-    Recipe defaultRecipe;
-    defaultRecipe.addIngredient(defaultIngredient);
-
-    // Using parameterized constructor for Recipe
-    Recipe cake("Cake");
-    cake.addIngredient(sugar);
-    cake.addIngredient(salt);
-
-    // Display recipes
-    defaultRecipe.displayRecipe();
-    cake.displayRecipe();
+    // Multi-Level Inheritance Example
+    cout << "\n--- Multi-Level Inheritance ---\n";
+    SmartOven oven("LG", 1200, true, 250);
+    oven.displayOvenInfo();
 
     return 0;
 }
