@@ -9,17 +9,21 @@ protected:
     int power; // in watts
 
 public:
-    // Parameterized Constructor
+    // Constructor Overloading (Example of Polymorphism)
+    Appliance() : brand("Unknown"), power(0) {
+        cout << "Default Appliance constructor called" << endl;
+    }
+    
     Appliance(string b, int p) : brand(b), power(p) {
-        cout << "Appliance constructor called for " << brand << endl;
+        cout << "Parameterized Appliance constructor called for " << brand << endl;
     }
 
     void displayApplianceInfo() const {
         cout << "Brand: " << brand << ", Power: " << power << "W" << endl;
     }
 
-    // Destructor
-    ~Appliance() {
+    // Virtual Destructor (For proper polymorphic behavior in inheritance)
+    virtual ~Appliance() {
         cout << "Appliance destructor called for " << brand << endl;
     }
 };
@@ -30,7 +34,11 @@ protected:
     bool wifiEnabled;
 
 public:
-    // Parameterized Constructor
+    // Constructor Overloading (Example of Polymorphism)
+    SmartDevice() : Appliance(), wifiEnabled(false) {
+        cout << "Default SmartDevice constructor called" << endl;
+    }
+    
     SmartDevice(string b, int p, bool wifi) : Appliance(b, p), wifiEnabled(wifi) {
         cout << "SmartDevice constructor called for " << brand << endl;
     }
@@ -40,8 +48,8 @@ public:
         cout << "Wi-Fi Enabled: " << (wifiEnabled ? "Yes" : "No") << endl;
     }
 
-    // Destructor
-    ~SmartDevice() {
+    // Virtual Destructor for proper polymorphic behavior
+    virtual ~SmartDevice() {
         cout << "SmartDevice destructor called for " << brand << endl;
     }
 };
@@ -52,10 +60,25 @@ private:
     int temperatureRange; // in Celsius
 
 public:
-    // Parameterized Constructor
+    // Constructor Overloading (Example of Polymorphism)
+    SmartOven() : SmartDevice(), temperatureRange(0) {
+        cout << "Default SmartOven constructor called" << endl;
+    }
+    
     SmartOven(string b, int p, bool wifi, int tempRange) 
         : SmartDevice(b, p, wifi), temperatureRange(tempRange) {
         cout << "SmartOven constructor called for " << brand << endl;
+    }
+
+    // Function Overloading (Example of Polymorphism)
+    void setTemperature(int temp) {
+        temperatureRange = temp;
+        cout << "Temperature set to " << temperatureRange << "°C" << endl;
+    }
+
+    void setTemperature(double temp) {
+        temperatureRange = static_cast<int>(temp);
+        cout << "Temperature set to " << temperatureRange << "°C (from double input)" << endl;
     }
 
     void displayOvenInfo() const {
@@ -69,17 +92,27 @@ public:
     }
 };
 
-// Main Function to demonstrate Inheritance
+// Main Function to demonstrate Inheritance and Polymorphism
 int main() {
-    // Single Inheritance Example
+    // Demonstrating Inheritance
     cout << "\n--- Single Inheritance ---\n";
     SmartDevice mixer("Philips", 500, true);
     mixer.displaySmartDeviceInfo();
 
-    // Multi-Level Inheritance Example
+    // Demonstrating Multi-Level Inheritance
     cout << "\n--- Multi-Level Inheritance ---\n";
     SmartOven oven("LG", 1200, true, 250);
     oven.displayOvenInfo();
-
+    
+    // Demonstrating Constructor Overloading
+    cout << "\n--- Constructor Overloading ---\n";
+    SmartOven defaultOven;
+    defaultOven.displayOvenInfo();
+    
+    // Demonstrating Function Overloading
+    cout << "\n--- Function Overloading ---\n";
+    oven.setTemperature(180); // Calls setTemperature(int)
+    oven.setTemperature(200.5); // Calls setTemperature(double)
+    
     return 0;
 }
