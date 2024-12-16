@@ -4,87 +4,96 @@
 
 using namespace std;
 
-// 🟢 Base Class (Abstract) for Notification
-class Notification {
+// 🟢 Base Class for Ingredient
+class Ingredient {
+protected:
+    string name;
+    int quantity;
+
 public:
-    virtual void sendNotification(const string& message) = 0; // Pure virtual function
+    // Constructor for base class
+    Ingredient(const string& name, int quantity) : name(name), quantity(quantity) {}
+
+    // Virtual method to get ingredient details
+    virtual void getDetails() const {
+        cout << "🟢 Ingredient: " << name << ", Quantity: " << quantity << " units" << endl;
+    }
+
+    // Virtual destructor
+    virtual ~Ingredient() {}
 };
 
-// 🟢 Derived Class 1: EmailNotification (Extends the base class)
-class EmailNotification : public Notification {
+// 🟢 Derived Class 1: Perishable Ingredient
+class PerishableIngredient : public Ingredient {
+private:
+    string expiryDate;
+
 public:
-    void sendNotification(const string& message) override {
-        cout << "📧 Email Notification Sent: " << message << endl;
+    // Constructor for PerishableIngredient
+    PerishableIngredient(const string& name, int quantity, const string& expiryDate) 
+        : Ingredient(name, quantity), expiryDate(expiryDate) {}
+
+    // Overriding the getDetails method
+    void getDetails() const override {
+        cout << "🥗 Perishable Ingredient: " << name 
+             << ", Quantity: " << quantity 
+             << " units, Expiry Date: " << expiryDate << endl;
     }
 };
 
-// 🟢 Derived Class 2: SMSNotification (Extends the base class)
-class SMSNotification : public Notification {
+// 🟢 Derived Class 2: NonPerishable Ingredient
+class NonPerishableIngredient : public Ingredient {
 public:
-    void sendNotification(const string& message) override {
-        cout << "📱 SMS Notification Sent: " << message << endl;
-    }
-};
+    // Constructor for NonPerishableIngredient
+    NonPerishableIngredient(const string& name, int quantity) 
+        : Ingredient(name, quantity) {}
 
-// 🟢 Derived Class 3: PushNotification (Extends the base class)
-class PushNotification : public Notification {
-public:
-    void sendNotification(const string& message) override {
-        cout << "📲 Push Notification Sent: " << message << endl;
-    }
+    // No need to override getDetails() since it follows the base class behavior
 };
 
 // 🟢 RecipeManager (Handles everything related to recipes)
 class RecipeManager {
 private:
-    struct Recipe {
-        string name;
-        vector<string> ingredients;
-    };
-    
-    vector<Recipe> recipes;
+    vector<Ingredient*> ingredients;
 
 public:
-    // Adds a new recipe to the list
-    void addRecipe(const string& name, const vector<string>& ingredients) {
-        Recipe newRecipe = {name, ingredients};
-        recipes.push_back(newRecipe);
-        cout << "Recipe added: " << name << endl;
+    // Adds an ingredient (both Perishable and NonPerishable)
+    void addIngredient(Ingredient* ingredient) {
+        ingredients.push_back(ingredient);
+        cout << "📦 Ingredient added to the list: " << endl;
+        ingredient->getDetails();
     }
 
-    // Lists all the recipes
-    void listRecipes() const {
-        cout << "List of Recipes:" << endl;
-        for (const auto& recipe : recipes) {
-            cout << "Recipe: " << recipe.name << endl;
-            cout << "Ingredients: ";
-            for (const auto& ingredient : recipe.ingredients) {
-                cout << ingredient << " ";
-            }
-            cout << endl;
+    // Lists all ingredients in the recipe
+    void listIngredients() const {
+        cout << "🍽️ List of Ingredients:" << endl;
+        for (const auto& ingredient : ingredients) {
+            ingredient->getDetails();
+        }
+    }
+
+    // Destructor to clean up dynamically allocated memory
+    ~RecipeManager() {
+        for (auto ingredient : ingredients) {
+            delete ingredient;
         }
     }
 };
 
 int main() {
-    // Create instances of different types of notifications
-    EmailNotification emailNotifier;
-    SMSNotification smsNotifier;
-    PushNotification pushNotifier;
-
-    // 📧 Send an email notification
-    emailNotifier.sendNotification("New recipe added: Pasta");
-
-    // 📱 Send an SMS notification
-    smsNotifier.sendNotification("Low stock on Tomatoes!");
-
-    // 📲 Send a push notification
-    pushNotifier.sendNotification("Recipe of the day: Smoothie");
+    // Create objects of different ingredient types
+    PerishableIngredient* tomato = new PerishableIngredient("Tomato", 5, "2024-12-20");
+    NonPerishableIngredient* sugar = new NonPerishableIngredient("Sugar", 10);
 
     // 📘 Manage Recipes
     RecipeManager recipeManager;
-    recipeManager.addRecipe("Pasta", {"Noodles", "Tomato Sauce", "Cheese"});
-    recipeManager.listRecipes();
+
+    // Add ingredients to the recipe (Using Liskov Substitution Principle)
+    recipeManager.addIngredient(tomato);
+    recipeManager.addIngredient(sugar);
+
+    // List all ingredients
+    recipeManager.listIngredients();
 
     return 0;
 }
