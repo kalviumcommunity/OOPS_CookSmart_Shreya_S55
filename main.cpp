@@ -1,118 +1,90 @@
 #include <iostream>
 #include <vector>
+#include <string>
 using namespace std;
 
-// Base Class (Parent) 
-class Appliance {
+// Abstract class (Base Class)
+class KitchenAppliance {
 protected:
     string brand;
-    int power; // in watts
 
 public:
-    // Constructor Overloading (Example of Polymorphism)
-    Appliance() : brand("Unknown"), power(0) {
-        cout << "Default Appliance constructor called" << endl;
-    }
-    
-    Appliance(string b, int p) : brand(b), power(p) {
-        cout << "Parameterized Appliance constructor called for " << brand << endl;
-    }
+    // Constructor
+    KitchenAppliance(string b) : brand(b) {}
 
-    void displayApplianceInfo() const {
-        cout << "Brand: " << brand << ", Power: " << power << "W" << endl;
-    }
+    // Pure Virtual Function (abstract function)
+    virtual void displayInfo() const = 0;
 
-    // Virtual Destructor (For proper polymorphic behavior in inheritance)
-    virtual ~Appliance() {
-        cout << "Appliance destructor called for " << brand << endl;
+    // Virtual Destructor
+    virtual ~KitchenAppliance() {
+        cout << "KitchenAppliance destructor called for brand: " << brand << endl;
     }
 };
 
-// Derived Class (Single Inheritance)
-class SmartDevice : public Appliance {
+// Derived Class 1: SmartDevice (inherits from KitchenAppliance)
+class SmartDevice : public KitchenAppliance {
 protected:
-    bool wifiEnabled;
+    string connectivityType;
 
 public:
-    // Constructor Overloading (Example of Polymorphism)
-    SmartDevice() : Appliance(), wifiEnabled(false) {
-        cout << "Default SmartDevice constructor called" << endl;
-    }
-    
-    SmartDevice(string b, int p, bool wifi) : Appliance(b, p), wifiEnabled(wifi) {
-        cout << "SmartDevice constructor called for " << brand << endl;
+    // Constructor
+    SmartDevice(string b, string c) : KitchenAppliance(b), connectivityType(c) {}
+
+    // Overriding the pure virtual function
+    void displayInfo() const override {
+        cout << "Smart Device Info:" << endl;
+        cout << "Brand: " << brand << endl;
+        cout << "Connectivity: " << connectivityType << endl;
     }
 
-    void displaySmartDeviceInfo() const {
-        displayApplianceInfo();
-        cout << "Wi-Fi Enabled: " << (wifiEnabled ? "Yes" : "No") << endl;
-    }
-
-    // Virtual Destructor for proper polymorphic behavior
-    virtual ~SmartDevice() {
-        cout << "SmartDevice destructor called for " << brand << endl;
+    // Destructor
+    ~SmartDevice() {
+        cout << "SmartDevice destructor called for brand: " << brand << endl;
     }
 };
 
-// Derived Class (Multi-Level Inheritance)
+// Derived Class 2: SmartOven (inherits from SmartDevice)
 class SmartOven : public SmartDevice {
 private:
-    int temperatureRange; // in Celsius
+    int maxTemperature;
 
 public:
-    // Constructor Overloading (Example of Polymorphism)
-    SmartOven() : SmartDevice(), temperatureRange(0) {
-        cout << "Default SmartOven constructor called" << endl;
-    }
-    
-    SmartOven(string b, int p, bool wifi, int tempRange) 
-        : SmartDevice(b, p, wifi), temperatureRange(tempRange) {
-        cout << "SmartOven constructor called for " << brand << endl;
-    }
+    // Constructor
+    SmartOven(string b, string c, int temp) : SmartDevice(b, c), maxTemperature(temp) {}
 
-    // Function Overloading (Example of Polymorphism)
-    void setTemperature(int temp) {
-        temperatureRange = temp;
-        cout << "Temperature set to " << temperatureRange << "°C" << endl;
-    }
-
-    void setTemperature(double temp) {
-        temperatureRange = static_cast<int>(temp);
-        cout << "Temperature set to " << temperatureRange << "°C (from double input)" << endl;
-    }
-
-    void displayOvenInfo() const {
-        displaySmartDeviceInfo();
-        cout << "Temperature Range: " << temperatureRange << "°C" << endl;
+    // Overriding the pure virtual function
+    void displayInfo() const override {
+        cout << "Smart Oven Info:" << endl;
+        cout << "Brand: " << brand << endl;
+        cout << "Connectivity: " << connectivityType << endl;
+        cout << "Max Temperature: " << maxTemperature << "°C" << endl;
     }
 
     // Destructor
     ~SmartOven() {
-        cout << "SmartOven destructor called for " << brand << endl;
+        cout << "SmartOven destructor called for brand: " << brand << endl;
     }
 };
 
-// Main Function to demonstrate Inheritance and Polymorphism
 int main() {
-    // Demonstrating Inheritance
-    cout << "\n--- Single Inheritance ---\n";
-    SmartDevice mixer("Philips", 500, true);
-    mixer.displaySmartDeviceInfo();
+    // Create a vector of pointers to KitchenAppliance objects
+    vector<KitchenAppliance*> appliances;
 
-    // Demonstrating Multi-Level Inheritance
-    cout << "\n--- Multi-Level Inheritance ---\n";
-    SmartOven oven("LG", 1200, true, 250);
-    oven.displayOvenInfo();
-    
-    // Demonstrating Constructor Overloading
-    cout << "\n--- Constructor Overloading ---\n";
-    SmartOven defaultOven;
-    defaultOven.displayOvenInfo();
-    
-    // Demonstrating Function Overloading
-    cout << "\n--- Function Overloading ---\n";
-    oven.setTemperature(180); // Calls setTemperature(int)
-    oven.setTemperature(200.5); // Calls setTemperature(double)
-    
+    // Create and add objects to the vector (using polymorphism)
+    appliances.push_back(new SmartDevice("Philips", "Wi-Fi"));
+    appliances.push_back(new SmartOven("LG", "Bluetooth", 250));
+
+    // Call the displayInfo() function for each appliance
+    cout << "---- Displaying Appliance Information ----" << endl;
+    for (KitchenAppliance* appliance : appliances) {
+        appliance->displayInfo();
+        cout << "------------------------------------------" << endl;
+    }
+
+    // Clean up memory (delete pointers)
+    for (KitchenAppliance* appliance : appliances) {
+        delete appliance;
+    }
+
     return 0;
 }
