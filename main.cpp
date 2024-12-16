@@ -4,6 +4,37 @@
 
 using namespace std;
 
+// 🟢 Base Class (Abstract) for Notification
+class Notification {
+public:
+    virtual void sendNotification(const string& message) = 0; // Pure virtual function
+};
+
+// 🟢 Derived Class 1: EmailNotification (Extends the base class)
+class EmailNotification : public Notification {
+public:
+    void sendNotification(const string& message) override {
+        cout << "📧 Email Notification Sent: " << message << endl;
+    }
+};
+
+// 🟢 Derived Class 2: SMSNotification (Extends the base class)
+class SMSNotification : public Notification {
+public:
+    void sendNotification(const string& message) override {
+        cout << "📱 SMS Notification Sent: " << message << endl;
+    }
+};
+
+// 🟢 Derived Class 3: PushNotification (Extends the base class)
+class PushNotification : public Notification {
+public:
+    void sendNotification(const string& message) override {
+        cout << "📲 Push Notification Sent: " << message << endl;
+    }
+};
+
+// 🟢 RecipeManager (Handles everything related to recipes)
 class RecipeManager {
 private:
     struct Recipe {
@@ -33,43 +64,27 @@ public:
             cout << endl;
         }
     }
-
-    // Deletes a recipe from the list
-    void deleteRecipe(const string& name) {
-        for (auto it = recipes.begin(); it != recipes.end(); ++it) {
-            if (it->name == name) {
-                recipes.erase(it);
-                cout << "Recipe deleted: " << name << endl;
-                return;
-            }
-        }
-        cout << "Recipe not found: " << name << endl;
-    }
-};
-
-// 🟢 Class 2: NotificationService (Handles notifications, separate from Recipe logic)
-class NotificationService {
-public:
-    void sendNotification(const string& message) {
-        cout << "🔔 Notification: " << message << endl;
-    }
 };
 
 int main() {
-    // Creating instances of the classes
+    // Create instances of different types of notifications
+    EmailNotification emailNotifier;
+    SMSNotification smsNotifier;
+    PushNotification pushNotifier;
+
+    // 📧 Send an email notification
+    emailNotifier.sendNotification("New recipe added: Pasta");
+
+    // 📱 Send an SMS notification
+    smsNotifier.sendNotification("Low stock on Tomatoes!");
+
+    // 📲 Send a push notification
+    pushNotifier.sendNotification("Recipe of the day: Smoothie");
+
+    // 📘 Manage Recipes
     RecipeManager recipeManager;
-    NotificationService notificationService;
-
-    // 📘 Managing recipes
     recipeManager.addRecipe("Pasta", {"Noodles", "Tomato Sauce", "Cheese"});
-    recipeManager.addRecipe("Smoothie", {"Banana", "Milk", "Honey"});
-
     recipeManager.listRecipes();
-
-    recipeManager.deleteRecipe("Smoothie");
-
-    // 🔔 Sending a notification
-    notificationService.sendNotification("Reminder: Buy more tomatoes!");
 
     return 0;
 }
